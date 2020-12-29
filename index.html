@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <style>
+    .add-item {
+      text-align: right;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    .del-btn {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-1 col-md-offset-11 add-item">
+        <button class="btn btn-primary" onclick="addItem()">添加</button>
+      </div>
+    </div>
+    <table id="box" class="table table-bordered">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>name</th>
+          <th>编辑</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    function getList () {
+      $.ajax({
+        type: "get",
+        url: "http://localhost:8888/conn.php",
+        dataType: "json",
+        success: function (response) {
+          let str = '';
+          for (let i = 0; i < response.length; i++) {
+            const element = response[i];
+            str += '<tr>'
+              +'<td>'+ element.id +'</td>'
+              +'<td>'+ element.name +'</td>'
+              +'<td><button class="btn btn-danger del-btn" onclick="delItem('+element.id+')">删除</button><button class="btn btn-primary" onclick="editItem('+element.id+')">修改</button></td>'
+              +'</tr>';
+          }
+          $('#box tbody').html(str);
+        }
+      });
+    }
+
+    getList();
+
+    function delItem (id) {
+      if(confirm("确定删除吗？")){
+        $.ajax({
+          type: "get",
+          url: "http://localhost:8888/delUser.php",
+          dataType: "json",
+          data: {
+            id: id
+          },
+          success: function (response) {
+            if (response.code === '200') {
+              alert('删除成功');
+              getList();
+            } else {
+              alert('删除失败:'+response.msg);
+            }
+          }
+        });
+      }
+    }
+
+    function addItem () {
+      var name = prompt("请输入");
+      if(name){
+        $.ajax({
+          type: "get",
+          url: "http://localhost:8888/addUser.php",
+          dataType: "json",
+          data: {
+            name: name
+          },
+          success: function (response) {
+            if (response.code === '200') {
+              // alert('添加成功');
+              getList();
+            } else {
+              alert('添加失败:'+response.msg);
+            }
+          }
+        });
+      }
+    }
+
+    function editItem (id) {
+      var name = prompt("请输入");
+      if(name){
+        $.ajax({
+          type: "get",
+          url: "http://localhost:8888/editUser.php",
+          dataType: "json",
+          data: {
+            id: id,
+            name: name
+          },
+          success: function (response) {
+            if (response.code === '200') {
+              getList();
+            } else {
+              alert('修改失败:'+response.msg);
+            }
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>
