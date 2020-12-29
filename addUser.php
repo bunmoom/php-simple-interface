@@ -1,14 +1,8 @@
 <?php
 
+include_once "./conn_head.php";
+
 $name = $_GET['name'];
-
-// 连接数据库
-$conn = mysqli_connect('localhost', 'root', 'root', 'test');
-
-// 判断是否连接数据库成功
-if (mysqli_connect_errno($conn)) {
-  echo '连接数据库失败：' . mysqli_connect_error();
-}
 
 // 编写sql
 $sql = 'insert user(name) values("'.$name.'")';
@@ -29,12 +23,7 @@ if ($result == 1) {
 
 echo json_encode($jarr);
 
-
-// 释放结果集
-mysqli_free_result($result);
-
-// 关闭打开的数据库连接
-mysqli_close($con);
+include_once "./conn_foot.php";
 
 
 
